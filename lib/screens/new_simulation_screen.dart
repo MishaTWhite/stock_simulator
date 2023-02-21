@@ -1,156 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:stock_simulator/screens/simulation_screen.dart';
 
 class NewSimulationScreen extends StatefulWidget {
-  const NewSimulationScreen({Key? key}) : super(key: key);
-
   @override
   _NewSimulationScreenState createState() => _NewSimulationScreenState();
 }
 
 class _NewSimulationScreenState extends State<NewSimulationScreen> {
-  String _name = '';
-  String _difficulty = '';
-  int _age = 18;
-  String _hints = '';
+  final TextEditingController _nameController = TextEditingController();
+  String _selectedDifficulty = 'Easy';
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-        title: Text('New Simulation'),
-    ),
-    body: Padding(
-    padding: EdgeInsets.all(16.0),
-    child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-    TextField(
-    decoration: InputDecoration(
-    labelText: 'Name',
-    ),
-    onChanged: (value) {
-    setState(() {
-    _name = value;
-    });
-    },
-    ),
-      DropdownButton<String>(
-        value: _difficulty.isEmpty ? 'easy' : _difficulty,
-        hint: Text('Difficulty'),
-        items: [
-          DropdownMenuItem(
-            value: 'easy',
-            child: Text('Easy'),
-          ),
-          DropdownMenuItem(
-            value: 'normal',
-            child: Text('Normal'),
-          ),
-          DropdownMenuItem(
-            value: 'hard',
-            child: Text('Hard'),
-          ),
-        ],
-        onChanged: (value) {
-          setState(() {
-            _difficulty = value!;
-          });
-        },
-      ),
+  void _onDifficultyChanged(String? value) {
+    if (value != null) {
+      setState(() {
+        _selectedDifficulty = value;
+      });
+    }
+  }
 
+  void _onStartSimulationPressed(BuildContext context) {
+    final String name = _nameController.text;
+    double startingBalance = 0.0;
 
-    Slider(
-    value: _age.toDouble(),
-    min: 18,
-    max: 60,
-    divisions: 42,
-    label: _age.toString(),
-    onChanged: (value) {
-    setState(() {
-    _age = value.round();
-    });
-    },
-    ),
+    switch (_selectedDifficulty) {
+      case 'Easy':
+        startingBalance = 100000.0;
+        break;
+      case 'Medium':
+        startingBalance = 10000.0;
+        break;
+      case 'Hard':
+        startingBalance = 3000.0;
+        break;
+      default:
+        startingBalance = 100000.0;
+    }
 
-      DropdownButton<String>(
-        value: _hints.isEmpty ? 'none' : _hints,
-        hint: Text('Hints'),
-        items: [
-          DropdownMenuItem(
-            value: 'none',
-            child: Text('No hints'),
-          ),
-          DropdownMenuItem(
-            value: 'some',
-            child: Text('Some hints'),
-          ),
-          DropdownMenuItem(
-            value: 'teach',
-            child: Text('Teach me'),
-          ),
-        ],
-        onChanged: (value) {
-          setState(() {
-            _hints = value!;
-          });
-        },
-      ),
-
-
-      Padding(
-        padding: EdgeInsets.symmetric(vertical: 16.0),
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SimulationScreen(
-                  name: _name,
-                  difficulty: _difficulty,
-                  age: _age,
-                  hints: _hints,
-                ),
-              ),
-            );
-          },
-          child: Text('Start Simulation'),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SimulationScreen(
+          name: name,
+          startingBalance: startingBalance,
         ),
       ),
-
-    ],
-    ),
-    ),
     );
   }
-}
-
-class SimulationScreen extends StatelessWidget {
-  final String name;
-  final String difficulty;
-  final int age;
-  final String hints;
-
-  SimulationScreen({
-    required this.name,
-    required this.difficulty,
-    required this.age,
-    required this.hints,
-  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Simulation'),
+        title: Text('New Simulation'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Name: $name'),
-            Text('Difficulty: $difficulty'),
-            Text('Age: $age'),
-            Text('Hints: $hints'),
+            Text(
+              'Select difficulty:',
+              style: TextStyle(fontSize: 20),
+            ),
+            DropdownButton<String>(
+              value: _selectedDifficulty,
+              items: [
+                DropdownMenuItem(
+                  child: Text('Easy'),
+                  value: 'Easy',
+                ),
+                DropdownMenuItem(
+                  child: Text('Medium'),
+                  value: 'Medium',
+                ),
+                DropdownMenuItem(
+                  child: Text('Hard'),
+                  value: 'Hard',
+                ),
+              ],
+              onChanged: _onDifficultyChanged,
+            ),
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Name:'),
+                  TextField(
+                    controller: _nameController,
+                  ),
+                  SizedBox(height: 8),
+                  Text('Starting Balance:'),
+                  Text('${_selectedDifficulty == 'Easy' ? 100000.0 : _selectedDifficulty == 'Medium' ? 10000.0 : 3000.0}'),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              child: Text('Start Simulation'),
+              onPressed: () => _onStartSimulationPressed(context),
+            ),
           ],
         ),
       ),
