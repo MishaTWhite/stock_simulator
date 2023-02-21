@@ -13,6 +13,89 @@ class SimulationScreen extends StatefulWidget {
   _SimulationScreenState createState() => _SimulationScreenState();
 }
 
+class SimulationScreen extends StatefulWidget {
+  final int startingAge;
+
+  SimulationScreen({this.startingAge});
+
+  @override
+  _SimulationScreenState createState() => _SimulationScreenState();
+}
+
+class _SimulationScreenState extends State<SimulationScreen> {
+  int _age;
+  DateTime _currentDate;
+  Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _age = widget.startingAge;
+    _currentDate = DateTime(DateTime.now().year, 1, 1);
+    _timer = Timer.periodic(Duration(days: 1), (timer) {
+      setState(() {
+        _currentDate = _currentDate.add(Duration(days: 1));
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _timer.cancel();
+  }
+
+  void _fastForward() {
+    setState(() {
+      _currentDate = _currentDate.add(Duration(days: 7));
+    });
+  }
+
+  void _regularForward() {
+    setState(() {
+      _currentDate = _currentDate.add(Duration(days: 1));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Симуляция'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Возраст: $_age',
+            style: TextStyle(fontSize: 20),
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              RaisedButton(
+                onPressed: _regularForward,
+                child: Text('Промотать день'),
+              ),
+              RaisedButton(
+                onPressed: _fastForward,
+                child: Text('Промотать неделю'),
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Text(
+            'Текущая дата: ${_currentDate.day}.${_currentDate.month}.${_currentDate.year}',
+            style: TextStyle(fontSize: 20),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
 class _SimulationScreenState extends State<SimulationScreen> {
   double _balance = 0.0;
 

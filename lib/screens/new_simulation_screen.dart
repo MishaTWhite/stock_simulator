@@ -6,6 +6,43 @@ class NewSimulationScreen extends StatefulWidget {
   _NewSimulationScreenState createState() => _NewSimulationScreenState();
 }
 
+class SimulationSettings extends StatefulWidget {
+  @override
+  _SimulationSettingsState createState() => _SimulationSettingsState();
+}
+
+class _SimulationSettingsState extends State<SimulationSettings> {
+  int _age = 30;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.25,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Возраст: $_age',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 10),
+          Slider(
+            value: _age.toDouble(),
+            min: 15,
+            max: 60,
+            onChanged: (newValue) {
+              setState(() {
+                _age = newValue.round();
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
 class _NewSimulationScreenState extends State<NewSimulationScreen> {
   final TextEditingController _nameController = TextEditingController();
   String _selectedDifficulty = 'Easy';
